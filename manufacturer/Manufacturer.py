@@ -1,5 +1,6 @@
 class Manufacturer:
-    def __init__(self, initial_stock, customer_order, address):
+    def __init__(self, env, initial_stock, customer_order, address):
+        self.env = env
         self.initial_stock = initial_stock
         self.customer_order = customer_order
         self.address = address

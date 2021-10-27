@@ -2,14 +2,14 @@ from Routing import ROUTING
 
 
 class Carrier:
-    def __init__(self, env, business_order):
-        self.business_order = business_order
+    def __init__(self, env, order):
+        self.order = order
         self.env = env
 
     def calculate_delivery(self):
         while True:
             for r_id, r in ROUTING:
-                if r_id == self.business_order.get_address():
+                if r_id == self.order.get_address():
                     for key in r:
                         if 'truck' in key:
                             yield self.env.process(self.delivery_truck(delivery_duration=key.value(),
