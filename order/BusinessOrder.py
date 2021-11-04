@@ -1,7 +1,7 @@
 from manufacturer import Manufacturer
 
 
-class Order:
+class BusinessOrder:
     def __init__(self, quantity, material_type, customer):
         self.quantity = quantity
         self.material_type = material_type
@@ -20,9 +20,3 @@ class Order:
 
     def get_customer(self):
         return self.customer
-
-    def __eq__(self, o: object) -> bool:
-        return super().__eq__(o)
-
-    def __ne__(self, o: object) -> bool:
-        return super().__ne__(o)
