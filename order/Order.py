@@ -1,11 +1,12 @@
-# Stock that contains
+from manufacturer import Manufacturer
+
 
 class Order:
-    def __init__(self, quantity, material_type, address):
+    def __init__(self, quantity, material_type, customer):
         self.quantity = quantity
         self.material_type = material_type
-        # Address of the (business) customer.
-        self.address = address
+        # Customer = Manufacturer or Final Customer
+        self.customer = customer
 
     def get_quantity(self):
         return self.quantity
@@ -15,7 +16,10 @@ class Order:
         return self.material_type
 
     def get_address(self):
-        return self.address
+        return self.customer.get_address()
+
+    def get_customer(self):
+        return self.customer
 
     def __eq__(self, o: object) -> bool:
         return super().__eq__(o)
