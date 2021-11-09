@@ -1,6 +1,6 @@
-
 class Customer:
-    def __init__(self, address, quantity):
+    def __init__(self, env, address, quantity):
+        self.env = env
         self.address = address
         self.quantity = quantity
 
@@ -9,3 +9,6 @@ class Customer:
 
     def get_quantity(self):
         return self.quantity
+
+    def receive_delivery(self, quantity):
+        print('Customer received a delivery of ' + quantity + ' items at ' + self.env.now())

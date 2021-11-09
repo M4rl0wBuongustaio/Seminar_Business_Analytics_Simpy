@@ -24,6 +24,10 @@ class RawMaterialSupplier:
             yield self.env.process(self.init_delivery(business_order))
     """
 
-    def init_delivery(self, business_order):
+    def init_delivery(self):
+        # 1 time period processing time.
+        yield self.env.timeout(1)
+        carrier = Carrier.Carrier(order=self.business_order, env=self.env)
         print('Delivery order has been sent to carrier at %d' % self.env.now)
-        return Carrier.Carrier(business_order, self.env).calculate_delivery()
+        self.env.process(carrier.calculate_delivery())
+
