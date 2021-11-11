@@ -42,7 +42,7 @@ class Manufacturer:
             self.stock_3.set_inventory(self.stock_3.get_inventory - required_material_3)
             # 1 time unit = 10 product units
             yield self.env.timeout(order_quantity / 10)
-            initialize_delivery(customer_order, self.env)
+            self.env.process(self.initialize_delivery(customer_order))
         self.add_backorder(customer_order)
 
     # Without safety stock.
@@ -59,10 +59,12 @@ class Manufacturer:
         return True
 
     def initialize_order(self, deviation, material_type):
-        order = BusinessOrder.BusinessOrder(quantity=deviation,
-                                            material_type=material_type,
-                                            customer=Manufacturer)
-        supplier = RawMaterialSupplier.RawMaterialSupplier(self.env, order, order.get_material_type())
+        business_order = BusinessOrder.BusinessOrder(quantity=deviation,
+                                                     material_type=material_type,
+                                                     customer=self)
+        supplier = RawMaterialSupplier.RawMaterialSupplier(env=self.env,
+                                                           business_order=business_order,
+                                                           material_type=material_type)
         self.env.process(supplier.init_delivery())
 
     def initialize_delivery(self, order):

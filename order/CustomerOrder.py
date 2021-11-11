@@ -1,8 +1,6 @@
 class CustomerOrder:
-    def __init__(self, env, quantity, address, customer):
-        self.env = env
+    def __init__(self, quantity, customer):
         self.quantity = quantity
-        self.address = address
         self.customer = customer
 
     def get_quantity(self):

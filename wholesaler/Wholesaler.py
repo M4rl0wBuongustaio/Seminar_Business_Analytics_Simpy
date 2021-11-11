@@ -1,4 +1,4 @@
-from order.CustomerOrder import CustomerOrder
+from order import CustomerOrder
 from carrier import Carrier
 import queue
 
@@ -34,7 +34,7 @@ class Wholesaler:
         self.env.process(self.check_stock())
 
     def initialize_order(self, quantity):
-        customer_order = CustomerOrder(self.env, quantity, self.address)
+        customer_order = CustomerOrder.CustomerOrder(quantity=quantity, customer=self)
         self.manufacturer.receive_customer_order(customer_order)
 
     def get_backorder(self):
