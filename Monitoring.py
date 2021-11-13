@@ -17,10 +17,11 @@ sc_data = pd.DataFrame(initial_data, index=[0])
 
 def append_data(**kwargs):
     new_data = initial_data
-    for key, value in kwargs.items():
-        new_data.update({key, value})
-    for key, value in new_data:
-        if value == 0:
+    for args in kwargs.items():
+        new_data.update({args})
+    helper_dict = new_data
+    for key in helper_dict:
+        if helper_dict[key] == 0:
             # Obtain values of last row.
-            new_data.update({key, sc_data.key.iat[-1]})
-    sc_data.append(other=new_data)
+            new_data.update({key: sc_data[key].iat[-1]})
+    sc_data.append(new_data, ignore_index=True)

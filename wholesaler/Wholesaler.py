@@ -31,8 +31,8 @@ class Wholesaler:
         self.env.process(self.reduce_stock(customer_order.get_quantity()))
 
     def receive_customer_order(self, customer_order):
-        self.env.process(self.add_backorder(customer_order))
-        self.env.process(self.check_stock())
+        self.add_backorder(customer_order)
+        self.check_stock()
 
     def initialize_order(self, quantity):
         customer_order = CustomerOrder.CustomerOrder(quantity=quantity, customer=self)

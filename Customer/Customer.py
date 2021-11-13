@@ -9,6 +9,7 @@ class Customer:
         self.quantity = quantity
         self.name = name
         self.wholesaler = wholesaler
+        # Place order as soon as created.
         self.initialize_order()
 
     def get_name(self):

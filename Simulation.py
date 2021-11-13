@@ -5,6 +5,7 @@ from Customer import Customer
 from manufacturer import Manufacturer
 from stock import Stock
 from wholesaler import Wholesaler
+import Monitoring as mT
 
 seed(25)
 
@@ -12,8 +13,8 @@ seed(25)
 def customer_generator(env, wholesaler):
     for i in itertools.count():
         yield env.timeout(randint(5, 35))
-        env.process(Customer.Customer(env=env, address=randint(1, 5), name=i, wholesaler=wholesaler,
-                                      quantity=randint(1, 15)))
+        Customer.Customer(env=env, address=randint(1, 5), name=i, wholesaler=wholesaler,
+                          quantity=randint(1, 15))
 
 
 env = simpy.Environment()
@@ -26,3 +27,5 @@ wholesaler = Wholesaler.Wholesaler(env=env, stock=stock_ws, manufacturer=manufac
 env.process(customer_generator(env=env, wholesaler=wholesaler))
 
 env.run(until=400)
+
+print(mT.sc_data)
