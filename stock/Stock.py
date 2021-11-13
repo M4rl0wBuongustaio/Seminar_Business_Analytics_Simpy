@@ -2,15 +2,11 @@ import Monitoring as mT
 
 
 class Stock:
-    def __init__(self, env, capacity, material_type, inventory, address):
+    def __init__(self, env, material_type, inventory, address):
         self.env = env
-        self.capacity = capacity
         self.material_type = material_type
         self.inventory = inventory
         self.address = address
-
-    def get_capacity(self):
-        return self.capacity
 
     def get_material_type(self):
         return self.material_type

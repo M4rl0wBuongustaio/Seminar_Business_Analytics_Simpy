@@ -7,10 +7,12 @@ initial_data = {
     'inv_mr_3': 0,
     'backorder_mr': 0,
     'inv_ws': 0,
-    'backorder_ws': 0
+    'backorder_ws': 0,
+    'customer_name': 0,
+    'received_quantity': 0
 }
 # Create DataFrame to monitor Supply Chain data.
-sc_data = pd.DataFrame(initial_data)
+sc_data = pd.DataFrame(initial_data, index=[0])
 
 
 def append_data(**kwargs):
