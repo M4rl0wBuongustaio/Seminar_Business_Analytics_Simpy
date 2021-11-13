@@ -1,6 +1,7 @@
 from order import CustomerOrder
 from carrier import Carrier
 import queue
+import Monitoring as mT
 
 
 class Wholesaler:
@@ -21,7 +22,7 @@ class Wholesaler:
         return self.address
 
     def check_stock(self):
-        customer_order = self.get_backorder()
+        customer_order = self.get_last_backorder()
         if self.stock.get_inventory() < customer_order.get_quantity():
             # Without safety stock.
             self.env.process(self.initialize_order(self.stock.get_inventory() - customer_order.get_quantity()))
@@ -37,14 +38,16 @@ class Wholesaler:
         customer_order = CustomerOrder.CustomerOrder(quantity=quantity, customer=self)
         self.manufacturer.receive_customer_order(customer_order)
 
-    def get_backorder(self):
+    def get_last_backorder(self):
+        backorder_ws = self.backorder.qsize() - 1
+        mT.append_data(date=self.env.now, backorder_ws=backorder_ws)
         return self.backorder.get()
 
     def add_backorder(self, customer_order):
+        backorder_ws = self.backorder.qsize() + 1
+        mT.append_data(date=self.env.now, backorder_ws=backorder_ws)
         self.backorder.put(customer_order)
 
     def reduce_stock(self, quantity):
         current_stock = self.stock.get_inventory()
         self.env.process(self.stock.set_inventory(current_stock - quantity))
-
-

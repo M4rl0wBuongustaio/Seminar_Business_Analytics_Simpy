@@ -1,7 +1,8 @@
+import Monitoring as mT
+import queue
+from carrier import Carrier
 from order import BusinessOrder
 from raw_material_supplier import RawMaterialSupplier
-from carrier import Carrier
-import queue
 
 
 class Manufacturer:
@@ -26,8 +27,8 @@ class Manufacturer:
         return
 
     def receive_order(self, customer_order):
-        self.add_backorder(customer_order)
-        self.produce()
+        self.env.process(self.add_backorder(customer_order))
+        self.env.process(self.produce())
 
     def produce(self):
         customer_order = self.get_last_backorder()
@@ -72,7 +73,11 @@ class Manufacturer:
         self.env.process(carrier.calculate_delivery())
 
     def add_backorder(self, customer_order):
+        backorder_mr = self.backorder.qsize() + 1
+        mT.append_data(date=self.env.now, backorder_mr=backorder_mr)
         self.backorder.put(customer_order)
 
     def get_last_backorder(self):
+        backorder_mr = self.backorder.qsize() - 1
+        mT.append_data(date=self.env.now, backorder_mr=backorder_mr)
         return self.backorder.get()
