@@ -1,4 +1,4 @@
-class BusinessOrder:
+class RawMaterialOrder:
     def __init__(self, quantity, material_type, customer):
         self.quantity = quantity
         self.material_type = material_type

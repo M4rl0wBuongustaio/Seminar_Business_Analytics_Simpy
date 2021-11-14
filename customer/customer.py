@@ -24,6 +24,6 @@ class Customer:
         oder = customer_order.CustomerOrder(quantity=self.quantity, customer=self)
         self.wholesaler.receive_customer_order(order=oder)
 
-    def receive_delivery(self, quantity):
-        self.monitoring.append_data(date=self.env.now, received_quantity=quantity, customer_name=self.name)
-        print('customer ' + self.name + ' received a delivery of ' + quantity + ' items at ' + self.env.now())
+    def receive_delivery(self, order: customer_order.CustomerOrder):
+        self.monitoring.append_data(date=self.env.now, received_quantity=order.get_quantity(), customer_name=self.name)
+        print('customer ' + self.name + ' received a delivery of ' + order.get_quantity() + ' items at ' + self.env.now)

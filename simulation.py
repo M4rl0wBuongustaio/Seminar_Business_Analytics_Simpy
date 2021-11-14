@@ -40,4 +40,4 @@ env.process(customer_generator(env=env, wholesaler=wholesaler))
 # Go!
 env.run(until=400)
 
-monitoring.save_sc_data()
+monitoring.print_sc_data()

@@ -29,4 +29,4 @@ class RawMaterialSupplier:
         yield self.env.timeout(1)
         transporter = carrier.Carrier(order=self.business_order, env=self.env)
         print('Delivery order has been sent to carrier at %d' % self.env.now)
-        self.env.process(transporter.calculate_delivery())
+        transporter.calculate_delivery()

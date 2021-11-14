@@ -21,22 +21,26 @@ class Wholesaler:
     def get_address(self):
         return self.address
 
-    def check_stock(self):
-        order = self.get_last_backorder()
-        if self.stock.get_inventory() < order.get_quantity():
+    def check_stock(self, order):
+        order_quantity = order.get_quantity()
+        if self.stock.get_inventory() < order_quantity:
             # Without safety stock.
-            self.initialize_business_order(self.stock.get_inventory() - order.get_quantity())
+            self.add_backorder(order)
+            self.initialize_business_order(order_quantity)
         transporter = carrier.Carrier(self.env, order)
         transporter.calculate_delivery()
-        self.reduce_stock(order.get_quantity())
+        self.reduce_stock(order_quantity)
 
     def receive_customer_order(self, order):
-        self.add_backorder(order)
-        self.check_stock()
+        self.check_stock(order)
+
+    def receive_delivery(self, order):
+        self.stock.set_inventory(order.get_quantity())
+        self.check_stock(order=self.get_last_backorder())
 
     def initialize_business_order(self, quantity):
         order = customer_order.CustomerOrder(quantity=quantity, customer=self)
-        self.manufacturer.receive_order(order)
+        self.manufacturer.receive_customer_order(order)
 
     def get_last_backorder(self):
         backorder_ws = self.backorder.qsize() - 1

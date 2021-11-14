@@ -24,12 +24,12 @@ class Carrier:
     def delivery_truck(self, delivery_duration, delivery_step):
         if delivery_step == 'truck':
             yield self.env.timeout(delivery_duration)
-            self.env.process(self.order.get_customer().receive_delivery(self.order.get_quantity()))
+            self.order.get_customer().receive_delivery(self.order)
         elif delivery_step == 'truck1':
             yield self.env.timeout(delivery_duration)
         elif delivery_step == 'truck2':
             yield self.env.timeout(delivery_duration)
-            self.env.process(self.order.get_customer().receive_delivery(self.order.get_quantity()))
+            self.order.get_customer().receive_delivery(self.order)
         return
 
     def delivery_ship(self, delivery_duration):
