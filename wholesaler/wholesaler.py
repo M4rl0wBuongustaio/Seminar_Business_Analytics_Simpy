@@ -27,7 +27,7 @@ class Wholesaler:
             # Without safety stock.
             self.add_backorder(order)
             self.initialize_business_order(order_quantity)
-        transporter = carrier.Carrier(self.env, order)
+        transporter = carrier.Carrier(env=self.env, order=order)
         transporter.calculate_delivery()
         self.reduce_stock(order_quantity)
 
