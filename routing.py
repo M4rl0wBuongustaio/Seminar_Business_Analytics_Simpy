@@ -5,3 +5,11 @@ ROUTING = {
     4: {'truck': 7},
     5: {'truck1': 1, 'ship': 4, 'truck2': 9}
 }
+
+ROUTING_2 = {
+    1: {'truck': 7},
+    2: {'truck': 5},
+    3: {'truck': 2},
+    4: {'truck': 7},
+    5: {'truck': 1}
+}

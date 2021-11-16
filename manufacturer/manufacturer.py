@@ -67,7 +67,10 @@ class Manufacturer:
         supplier = raw_material_supplier.RawMaterialSupplier(env=self.env,
                                                              business_order=b_order,
                                                              material_type=material_type)
+        # TODO: Is not executing following function!
         supplier.init_delivery()
+        # Test: Remove before submission!
+        supplier.do_something()
 
     def initialize_delivery(self, c_order: customer_order.CustomerOrder):
         transporter = carrier.Carrier(self.env, c_order)
