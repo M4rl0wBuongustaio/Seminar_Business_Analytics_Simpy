@@ -25,7 +25,7 @@ class Stock:
             self.monitoring.append_data(date=self.env.now, inv_mr_2=inventory)
         elif self.material_type == 3:
             self.monitoring.append_data(date=self.env.now, inv_mr_3=inventory)
-        self.inventory = inventory
+        self.inventory = inventory + self.get_inventory()
 
     def get_address(self):
         return self.address

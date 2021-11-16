@@ -1,3 +1,5 @@
+import random
+
 from order import customer_order
 from carrier import carrier
 import queue
@@ -26,7 +28,7 @@ class Wholesaler:
         if self.stock.get_inventory() < order_quantity:
             # Without safety stock.
             self.add_backorder(order)
-            self.initialize_business_order(order_quantity)
+            self.initialize_business_order(quantity=order_quantity, c_order_id=id(order))
             return
         transporter = carrier.Carrier(env=self.env, c_order=order)
         transporter.calculate_delivery()
@@ -40,8 +42,8 @@ class Wholesaler:
         self.stock.set_inventory(order.get_quantity())
         self.check_stock(order=self.get_last_backorder())
 
-    def initialize_business_order(self, quantity):
-        order = customer_order.CustomerOrder(quantity=quantity, customer=self)
+    def initialize_business_order(self, quantity, c_order_id):
+        order = customer_order.CustomerOrder(quantity=quantity, debtor=self, ident=c_order_id)
         self.manufacturer.receive_customer_order(order)
 
     def get_last_backorder(self):

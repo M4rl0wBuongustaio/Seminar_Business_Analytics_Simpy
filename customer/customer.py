@@ -21,7 +21,7 @@ class Customer:
         return self.quantity
 
     def initialize_order(self):
-        oder = customer_order.CustomerOrder(quantity=self.quantity, customer=self)
+        oder = customer_order.CustomerOrder(quantity=self.quantity, debtor=self, ident=id(self))
         self.wholesaler.receive_customer_order(order=oder)
 
     def receive_delivery(self, order: customer_order.CustomerOrder):
