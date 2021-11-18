@@ -1,3 +1,4 @@
+import order.customer_order
 from order import customer_order
 
 
@@ -21,9 +22,13 @@ class Customer:
         return self.quantity
 
     def initialize_order(self):
-        oder = customer_order.CustomerOrder(quantity=self.quantity, debtor=self, ident=id(self))
-        self.wholesaler.receive_customer_order(order=oder)
+        c_order = customer_order.CustomerOrder(quantity=self.quantity, debtor=self)
+        self.wholesaler.receive_customer_order(c_order=c_order)
 
-    def receive_delivery(self, order: customer_order.CustomerOrder):
-        self.monitoring.append_data(date=self.env.now, received_quantity=order.get_quantity(), customer_name=self.name)
-        print('customer ' + self.name + ' received a delivery of ' + order.get_quantity() + ' items at ' + self.env.now)
+    def receive_delivery(self, c_order: order.customer_order.CustomerOrder):
+        quantity = c_order.get_quantity()
+        name = self.name
+        self.monitoring.append_data(date=self.env.now, received_quantity=quantity,
+                                    customer_name=name)
+        #print(
+         #   'customer ' + self.name + ' received a delivery of ' + c_order.get_quantity() + ' items at ' + self.env.now)"

@@ -12,12 +12,12 @@ seed(25)
 # Monitoring
 initial_data = {'date': [0], 'inv_mr_1': [0], 'inv_mr_2': [0], 'inv_mr_3': [0], 'backorder_mr': [0], 'inv_ws': [0],
                 'backorder_ws': [0], 'customer_name': [0], 'received_quantity': [0]}
-data_frame = pd.DataFrame(initial_data)
+data_frame = pd.DataFrame(initial_data, index=[1])
 monitoring = monitoring.Monitoring(data_frame=data_frame, initial_data=initial_data)
 
 
 def customer_generator(env, wholesaler):
-    i = 0
+    i = 1
     while i < 40:
         yield env.timeout(randint(2, 9))
         customer.Customer(env=env, address=randint(1, 5), name=i, wholesaler=wholesaler, quantity=randint(1, 35),

@@ -2,10 +2,9 @@ import customer.customer
 
 
 class CustomerOrder:
-    def __init__(self, quantity, debtor, ident):
+    def __init__(self, quantity, debtor):
         self.quantity = quantity
         self.debtor = debtor
-        self.ident = ident
 
     def get_quantity(self):
         return self.quantity
@@ -17,4 +16,4 @@ class CustomerOrder:
         return self.debtor.get_address()
 
     def get_ident(self):
-        return self.ident
+        return id(self)

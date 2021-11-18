@@ -18,7 +18,8 @@ class Monitoring:
             if helper_dict[key] == 0:
                 # Obtain values of last row.
                 new_data.update({key: self.sc_data[key].iat[-1]})
-        append_df = pd.DataFrame(new_data)
+        new_index = self.sc_data.index[-1] + 1
+        append_df = pd.DataFrame(new_data, index=[new_index])
         self.sc_data = self.sc_data.append(append_df, ignore_index=True)
 
     def print_sc_data(self):

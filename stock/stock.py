@@ -14,7 +14,7 @@ class Stock:
     def get_inventory(self):
         return self.inventory
 
-    def set_inventory(self, inventory):
+    def increase_inventory(self, inventory):
         # material_type for Wholesaler = 0
         if self.material_type == 0:
             self.monitoring.append_data(date=self.env.now, inv_ws=inventory)
