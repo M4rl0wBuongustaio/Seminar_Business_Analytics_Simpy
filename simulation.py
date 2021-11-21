@@ -18,26 +18,27 @@ monitoring = monitoring.Monitoring(data_frame=data_frame, initial_data=initial_d
 
 def customer_generator(env, wholesaler):
     i = 1
-    while i < 40:
+    while env.now < 400:
         yield env.timeout(randint(2, 9))
         customer.Customer(env=env, address=randint(1, 5), name=i, wholesaler=wholesaler, quantity=randint(1, 35),
                           monitoring=monitoring)
-        i = i + randint(0, 2)
+        i = i + randint(1, 3)
 
 
 env = simpy.Environment()
 # Manufacturer
-stock_1 = stock.Stock(env=env, material_type=1, inventory=0, address=3, monitoring=monitoring)
-stock_2 = stock.Stock(env=env, material_type=2, inventory=0, address=3, monitoring=monitoring)
-stock_3 = stock.Stock(env=env, material_type=3, inventory=0, address=3, monitoring=monitoring)
+stock_1 = stock.Stock(env=env, material_type=1, inventory=0, safety_stock=0, address=3, monitoring=monitoring)
+stock_2 = stock.Stock(env=env, material_type=2, inventory=0, safety_stock=0, address=3, monitoring=monitoring)
+stock_3 = stock.Stock(env=env, material_type=3, inventory=0, safety_stock=0, address=3, monitoring=monitoring)
 manufacturer = manufacturer.Manufacturer(env=env, address=3, stock_1=stock_1, stock_2=stock_2, stock_3=stock_3,
                                          monitoring=monitoring)
 # Wholesaler
-stock_ws = stock.Stock(env=env, material_type=0, inventory=0, address=2, monitoring=monitoring)
+stock_ws = stock.Stock(env=env, material_type=0, inventory=0, safety_stock=0, address=2, monitoring=monitoring)
 wholesaler = wholesaler.Wholesaler(env=env, stock=stock_ws, manufacturer=manufacturer, address=2, monitoring=monitoring)
 # start of simulation
 env.process(customer_generator(env=env, wholesaler=wholesaler))
 # Go!
 env.run(until=400)
 
-monitoring.print_sc_data()
+# monitoring.print_sc_data()
+# monitoring.save_sc_data()

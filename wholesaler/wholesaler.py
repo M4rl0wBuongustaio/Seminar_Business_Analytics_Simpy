@@ -24,15 +24,14 @@ class Wholesaler:
 
     def check_stock(self, c_order: order.customer_order.CustomerOrder):
         order_quantity = c_order.get_quantity()
-        if self.stock.get_inventory() < order_quantity:
-            # Without safety stock.
+        if self.stock.get_inventory() - order_quantity < self.stock.get_safety_stock():
+            self.initialize_business_order(
+                quantity=self.stock.get_safety_stock() - (self.stock.get_inventory() - order_quantity))
             self.add_backorder(c_order)
-            self.initialize_business_order(quantity=order_quantity)
-            return
-        transporter = carrier.Carrier(env=self.env, c_order=c_order)
-        transporter.calculate_delivery()
-        self.reduce_stock(order_quantity)
-        return
+        else:
+            transporter = carrier.Carrier(env=self.env, c_order=c_order)
+            transporter.calculate_delivery()
+            self.stock.decrease_inventory(quantity=order_quantity)
 
     def receive_customer_order(self, c_order):
         self.check_stock(c_order)
@@ -48,13 +47,9 @@ class Wholesaler:
     def get_last_backorder(self):
         backorder_ws = self.backorder.qsize() - 1
         self.monitoring.append_data(date=self.env.now, backorder_ws=backorder_ws)
-        return self.backorder.get()
+        return self.backorder.get_nowait()
 
     def add_backorder(self, c_order):
         backorder_ws = self.backorder.qsize() + 1
         self.monitoring.append_data(date=self.env.now, backorder_ws=backorder_ws)
-        self.backorder.put(c_order)
-
-    def reduce_stock(self, quantity):
-        current_stock = self.stock.get_inventory()
-        self.stock.increase_inventory(current_stock - quantity)
+        self.backorder.put_nowait(c_order)

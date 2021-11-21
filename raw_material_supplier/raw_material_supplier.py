@@ -9,5 +9,4 @@ class RawMaterialSupplier:
 
     def init_delivery(self):
         transporter = carrier.Carrier(c_order=self.business_order, env=self.env)
-        print('Delivery order has been sent to carrier at %d' % self.env.now)
         transporter.calculate_delivery()
