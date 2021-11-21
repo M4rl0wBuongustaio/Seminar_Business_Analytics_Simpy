@@ -32,6 +32,7 @@ class Wholesaler:
             transporter = carrier.Carrier(env=self.env, c_order=c_order)
             transporter.calculate_delivery()
             self.stock.decrease_inventory(quantity=order_quantity)
+            self.backorder.task_done()
 
     def receive_customer_order(self, c_order):
         self.check_stock(c_order)
@@ -45,11 +46,10 @@ class Wholesaler:
         self.manufacturer.receive_customer_order(c_order)
 
     def get_last_backorder(self):
-        backorder_ws = self.backorder.qsize() - 1
-        self.monitoring.append_data(date=self.env.now, backorder_ws=backorder_ws)
-        return self.backorder.get_nowait()
+        backorder_ws = self.backorder.get()
+        self.monitoring.append_data(date=self.env.now, backorder_ws=self.backorder.qsize())
+        return backorder_ws
 
     def add_backorder(self, c_order):
-        backorder_ws = self.backorder.qsize() + 1
-        self.monitoring.append_data(date=self.env.now, backorder_ws=backorder_ws)
-        self.backorder.put_nowait(c_order)
+        self.backorder.put(c_order)
+        self.monitoring.append_data(date=self.env.now, backorder_ws=self.backorder.qsize())

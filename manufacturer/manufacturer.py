@@ -33,10 +33,10 @@ class Manufacturer:
             self.stock_3.increase_inventory(quantity)
         self.job_list[target_customer_id][material_type] = 0
         if all(value == 0 for value in self.job_list[target_customer_id].values()):
-            self.produce(c_order=self.get_last_backorder())
+            self.env.process(self.produce(c_order=self.get_last_backorder()))
 
     def receive_customer_order(self, c_order: order.customer_order.CustomerOrder):
-        self.produce(c_order)
+        self.env.process(self.produce(c_order))
 
     def produce(self, c_order: customer_order.CustomerOrder):
         customer_id = c_order.get_ident()
@@ -47,11 +47,15 @@ class Manufacturer:
         required_material_3 = order_quantity * 0.5
         if self.check_stock(customer_id=customer_id, rm1=required_material_1,
                             rm2=required_material_2, rm3=required_material_3):
-            self.stock_1.decrease_inventory(self.stock_1.get_inventory() - required_material_1)
-            self.stock_2.decrease_inventory(self.stock_2.get_inventory() - required_material_2)
-            self.stock_3.decrease_inventory(self.stock_3.get_inventory() - required_material_3)
+            self.stock_1.decrease_inventory(required_material_1)
+            self.stock_2.decrease_inventory(required_material_2)
+            self.stock_3.decrease_inventory(required_material_3)
             self.initialize_delivery(c_order)
-        self.add_backorder(c_order)
+            self.backorder.task_done()
+            # one time unit for producing 4 products.
+            yield self.env.timeout(order_quantity/4)
+        else:
+            self.add_backorder(c_order)
 
     def check_stock(self, customer_id, rm1, rm2, rm3):
         rm1_ordered = rm2_ordered = rm3_ordered = enough_stock = False
@@ -95,11 +99,10 @@ class Manufacturer:
         transporter.calculate_delivery()
 
     def add_backorder(self, backorder: order.customer_order.CustomerOrder):
-        backorder_mr = self.backorder.qsize() + 1
-        self.monitoring.append_data(date=self.env.now, backorder_mr=backorder_mr)
         self.backorder.put(backorder)
+        self.monitoring.append_data(date=self.env.now, backorder_mr=self.backorder.qsize())
 
     def get_last_backorder(self):
-        backorder_mr = self.backorder.qsize() - 1
-        self.monitoring.append_data(date=self.env.now, backorder_mr=backorder_mr)
-        return self.backorder.get()
+        backorder = self.backorder.get()
+        self.monitoring.append_data(date=self.env.now, backorder_mr=self.backorder.qsize())
+        return backorder
