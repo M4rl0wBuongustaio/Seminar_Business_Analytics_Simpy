@@ -6,6 +6,7 @@ class Stock:
         self.safety_stock = safety_stock
         self.address = address
         self.monitoring = monitoring
+        self.increase_inventory(self.inventory)
 
     def get_material_type(self):
         return self.material_type

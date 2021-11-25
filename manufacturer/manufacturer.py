@@ -51,9 +51,8 @@ class Manufacturer:
             self.stock_2.decrease_inventory(required_material_2)
             self.stock_3.decrease_inventory(required_material_3)
             self.initialize_delivery(c_order)
-            self.backorder.task_done()
             # one time unit for producing 4 products.
-            yield self.env.timeout(order_quantity/4)
+            yield self.env.timeout(order_quantity/0.5)
         else:
             self.add_backorder(c_order)
 
@@ -92,7 +91,7 @@ class Manufacturer:
         supplier = raw_material_supplier.RawMaterialSupplier(env=self.env,
                                                              business_order=b_order,
                                                              material_type=material_type)
-        supplier.init_delivery()
+        self.env.process(supplier.init_delivery())
 
     def initialize_delivery(self, c_order: customer_order.CustomerOrder):
         transporter = carrier.Carrier(self.env, c_order)

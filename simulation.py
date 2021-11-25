@@ -20,7 +20,7 @@ def customer_generator(env, wholesaler):
     i = 1
     while env.now < 350:
         yield env.timeout(randint(1, 3))
-        customer.Customer(env=env, address=randint(1, 5), name=i, wholesaler=wholesaler, quantity=randint(1, 35),
+        customer.Customer(env=env, address=randint(1, 5), name=i, wholesaler=wholesaler, quantity=randint(20, 35),
                           monitoring=monitoring)
         i += 1
 
@@ -30,13 +30,13 @@ run_time = 400
 env = simpy.Environment()
 # Manufacturer
 address = 2
-stock_1 = stock.Stock(env=env, material_type=1, inventory=0, safety_stock=0, address=address, monitoring=monitoring)
-stock_2 = stock.Stock(env=env, material_type=2, inventory=0, safety_stock=0, address=address, monitoring=monitoring)
-stock_3 = stock.Stock(env=env, material_type=3, inventory=0, safety_stock=0, address=address, monitoring=monitoring)
+stock_1 = stock.Stock(env=env, material_type=1, inventory=10, safety_stock=10, address=address, monitoring=monitoring)
+stock_2 = stock.Stock(env=env, material_type=2, inventory=15, safety_stock=15, address=address, monitoring=monitoring)
+stock_3 = stock.Stock(env=env, material_type=3, inventory=25, safety_stock=25, address=address, monitoring=monitoring)
 manufacturer = manufacturer.Manufacturer(env=env, address=address, stock_1=stock_1, stock_2=stock_2, stock_3=stock_3,
                                          monitoring=monitoring)
 # Wholesaler
-stock_ws = stock.Stock(env=env, material_type=0, inventory=0, safety_stock=0, address=2, monitoring=monitoring)
+stock_ws = stock.Stock(env=env, material_type=0, inventory=100, safety_stock=50, address=2, monitoring=monitoring)
 wholesaler = wholesaler.Wholesaler(env=env, stock=stock_ws, manufacturer=manufacturer, address=2, monitoring=monitoring)
 # start of simulation
 env.process(customer_generator(env=env, wholesaler=wholesaler))

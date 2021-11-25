@@ -26,4 +26,4 @@ class Monitoring:
         print(self.sc_data)
 
     def save_sc_data(self):
-        self.sc_data.to_excel('Supply_Chain_Data.xlsx')
+        self.sc_data.to_excel('Supply_Chain_Data_with_safety_stock.xlsx')

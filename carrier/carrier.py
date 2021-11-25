@@ -1,10 +1,8 @@
-import customer.customer
-import order.customer_order
 from routing import ROUTING
 
 
 class Carrier:
-    def __init__(self, env, c_order: order.customer_order.CustomerOrder):
+    def __init__(self, env, c_order):
         self.c_order = c_order
         self.env = env
 

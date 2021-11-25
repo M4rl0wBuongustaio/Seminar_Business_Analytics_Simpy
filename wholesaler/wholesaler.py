@@ -32,7 +32,6 @@ class Wholesaler:
             transporter = carrier.Carrier(env=self.env, c_order=c_order)
             transporter.calculate_delivery()
             self.stock.decrease_inventory(quantity=order_quantity)
-            self.backorder.task_done()
 
     def receive_customer_order(self, c_order):
         self.check_stock(c_order)
