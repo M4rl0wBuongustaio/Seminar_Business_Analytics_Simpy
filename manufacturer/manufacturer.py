@@ -52,34 +52,46 @@ class Manufacturer:
             self.stock_3.decrease_inventory(required_material_3)
             self.initialize_delivery(c_order)
             # one time unit for producing 4 products.
-            yield self.env.timeout(order_quantity/0.5)
+            yield self.env.timeout(order_quantity / 0.5)
         else:
             self.add_backorder(c_order)
 
     def check_stock(self, customer_id, rm1, rm2, rm3):
-        rm1_ordered = rm2_ordered = rm3_ordered = enough_stock = False
-        while not enough_stock:
-            if self.stock_1.get_inventory() - rm1 < self.stock_1.get_safety_stock() and not rm1_ordered:
-                order_quantity = self.stock_1.get_safety_stock() - (self.stock_1.get_inventory() - rm1)
+        out_of_rm1 = out_of_rm2 = out_of_rm3 = rm1_ordered = rm2_ordered = rm3_ordered = False
+        while True:
+            if self.stock_1.get_inventory() - rm1 < self.stock_1.get_safety_stock() and not (out_of_rm1 or rm1_ordered):
+                if self.stock_1.get_inventory() < rm1:
+                    out_of_rm1 = True
+                    order_quantity = rm1
+                else:
+                    order_quantity = self.stock_1.get_safety_stock() - (self.stock_1.get_inventory() - rm1)
                 self.initialize_business_order(quantity=order_quantity, material_type=self.stock_1.get_material_type(),
                                                target_customer_order_id=customer_id)
                 rm1_ordered = True
                 continue
-            elif self.stock_2.get_inventory() - rm2 < self.stock_2.get_safety_stock() and not rm2_ordered:
-                order_quantity = self.stock_2.get_safety_stock() - (self.stock_2.get_inventory() - rm2)
+            elif self.stock_2.get_inventory() - rm2 < self.stock_2.get_safety_stock() and not (out_of_rm2 or rm2_ordered):
+                if self.stock_2.get_inventory() < rm2:
+                    out_of_rm2 = True
+                    order_quantity = rm2
+                else:
+                    order_quantity = self.stock_2.get_safety_stock() - (self.stock_2.get_inventory() - rm2)
                 self.initialize_business_order(quantity=order_quantity,
                                                material_type=self.stock_2.get_material_type(),
                                                target_customer_order_id=customer_id)
                 rm2_ordered = True
                 continue
-            elif self.stock_3.get_inventory() - rm3 < self.stock_3.get_safety_stock() and not rm3_ordered:
-                order_quantity = self.stock_3.get_safety_stock() - (self.stock_3.get_inventory() - rm3)
+            elif self.stock_3.get_inventory() - rm3 < self.stock_3.get_safety_stock() and not (out_of_rm3 or rm3_ordered):
+                if self.stock_3.get_inventory() < rm3:
+                    out_of_rm3 = True
+                    order_quantity = rm3
+                else:
+                    order_quantity = self.stock_3.get_safety_stock() - (self.stock_3.get_inventory() - rm3)
                 self.initialize_business_order(quantity=order_quantity,
                                                material_type=self.stock_3.get_material_type(),
                                                target_customer_order_id=customer_id)
                 rm3_ordered = True
                 continue
-            elif rm1_ordered or rm2_ordered or rm3_ordered:
+            elif out_of_rm1 or out_of_rm2 or out_of_rm3:
                 return False
             return True
 
