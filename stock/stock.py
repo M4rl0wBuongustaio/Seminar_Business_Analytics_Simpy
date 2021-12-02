@@ -28,6 +28,16 @@ class Stock:
     def get_address(self):
         return self.address
 
+    def check_stock(self, required_quantity):
+        if self.get_inventory() > required_quantity:
+            if self.get_safety_stock() > (self.get_inventory() - required_quantity):
+                return self.get_safety_stock() - (self.get_inventory() - required_quantity)
+        elif self.get_safety_stock() > 0 and not self.get_inventory() > required_quantity:
+            return self.get_safety_stock() - (self.get_inventory() - required_quantity)
+        else:
+            return required_quantity - self.get_inventory()
+        return 0
+
     def monitor_inventory(self):
         current_inventory = self.get_inventory()
         if self.material_type == 0:
@@ -39,3 +49,5 @@ class Stock:
             self.monitoring.append_data(date=self.env.now, inv_mr_2=current_inventory)
         elif self.material_type == 3:
             self.monitoring.append_data(date=self.env.now, inv_mr_3=current_inventory)
+
+

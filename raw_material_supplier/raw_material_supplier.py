@@ -9,6 +9,5 @@ class RawMaterialSupplier:
         self.material_type = material_type
 
     def init_delivery(self):
-        yield self.env.timeout(self.business_order.get_quantity()/2)
         transporter = carrier.Carrier(c_order=self.business_order, env=self.env)
         transporter.calculate_delivery()

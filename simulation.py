@@ -16,28 +16,28 @@ data_frame = pd.DataFrame(initial_data, index=[1])
 monitoring = monitoring.Monitoring(data_frame=data_frame, initial_data=initial_data)
 
 # simulation environment
-run_time = 400
+run_time = 365
 
 
 def customer_generator(env, wholesaler):
     i = 1
     while env.now < run_time:
         yield env.timeout(2)
-        customer.Customer(env=env, address=randint(1, 5), name=i, wholesaler=wholesaler, quantity=20,
+        customer.Customer(env=env, address=randint(1, 5), name=i, wholesaler=wholesaler, quantity=5,
                           monitoring=monitoring)
         i += 1
 
 
 env = simpy.Environment()
 # Manufacturer
-address = 2
-stock_1 = stock.Stock(env=env, material_type=1, inventory=2000, safety_stock=2000, address=address, monitoring=monitoring)
-stock_2 = stock.Stock(env=env, material_type=2, inventory=2000, safety_stock=2000, address=address, monitoring=monitoring)
-stock_3 = stock.Stock(env=env, material_type=3, inventory=2000, safety_stock=2000, address=address, monitoring=monitoring)
+address = 3
+stock_1 = stock.Stock(env=env, material_type=1, inventory=0, safety_stock=10, address=address, monitoring=monitoring)
+stock_2 = stock.Stock(env=env, material_type=2, inventory=0, safety_stock=20, address=address, monitoring=monitoring)
+stock_3 = stock.Stock(env=env, material_type=3, inventory=0, safety_stock=30, address=address, monitoring=monitoring)
 manufacturer = manufacturer.Manufacturer(env=env, address=address, stock_1=stock_1, stock_2=stock_2, stock_3=stock_3,
                                          monitoring=monitoring)
 # Wholesaler
-stock_ws = stock.Stock(env=env, material_type=0, inventory=0, safety_stock=0, address=2, monitoring=monitoring)
+stock_ws = stock.Stock(env=env, material_type=0, inventory=50, safety_stock=30, address=2, monitoring=monitoring)
 wholesaler = wholesaler.Wholesaler(env=env, stock=stock_ws, manufacturer=manufacturer, address=2, monitoring=monitoring)
 # start of simulation
 env.process(customer_generator(env=env, wholesaler=wholesaler))
@@ -45,6 +45,6 @@ env.process(customer_generator(env=env, wholesaler=wholesaler))
 env.run(until=run_time)
 
 # monitoring.print_sc_data()
-# monitoring.save_sc_data()
+monitoring.save_sc_data()
 
 print(monitoring.get_sc_data().to_string())

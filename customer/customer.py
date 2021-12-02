@@ -30,4 +30,4 @@ class Customer:
         name = self.name
         self.monitoring.append_data(date=self.env.now, received_quantity=quantity,
                                     customer_name=name)
-        print('Customer: ' + str(self.name) + ' received and delivery of: ' + str(quantity))
+        print('Customer: ' + str(self.name) + ' received and delivery of:' + str(quantity))

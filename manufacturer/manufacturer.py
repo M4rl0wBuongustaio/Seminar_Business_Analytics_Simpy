@@ -38,6 +38,7 @@ class Manufacturer:
     def receive_customer_order(self, c_order: order.customer_order.CustomerOrder):
         self.env.process(self.produce(c_order))
 
+
     def produce(self, c_order: customer_order.CustomerOrder):
         customer_id = c_order.get_ident()
         order_quantity = c_order.get_quantity()
@@ -50,50 +51,39 @@ class Manufacturer:
             self.stock_1.decrease_inventory(required_material_1)
             self.stock_2.decrease_inventory(required_material_2)
             self.stock_3.decrease_inventory(required_material_3)
+            yield self.env.timeout(2)
             self.initialize_delivery(c_order)
-            # one time unit for producing 4 products.
-            yield self.env.timeout(order_quantity / 0.5)
         else:
             self.add_backorder(c_order)
 
     def check_stock(self, customer_id, rm1, rm2, rm3):
         out_of_rm1 = out_of_rm2 = out_of_rm3 = rm1_ordered = rm2_ordered = rm3_ordered = False
+        result_stock_check_1 = self.stock_1.check_stock(rm1)
+        result_stock_check_2 = self.stock_2.check_stock(rm2)
+        result_stock_check_3 = self.stock_3.check_stock(rm3)
         while True:
-            if self.stock_1.get_inventory() - rm1 < self.stock_1.get_safety_stock() and not (out_of_rm1 or rm1_ordered):
-                if self.stock_1.get_inventory() < rm1:
-                    out_of_rm1 = True
-                    order_quantity = rm1
-                else:
-                    order_quantity = self.stock_1.get_safety_stock() - (self.stock_1.get_inventory() - rm1)
-                self.initialize_business_order(quantity=order_quantity, material_type=self.stock_1.get_material_type(),
-                                               target_customer_order_id=customer_id)
+            if result_stock_check_1 > 0 and not rm1_ordered:
                 rm1_ordered = True
+                self.initialize_business_order(quantity=result_stock_check_1,
+                                               material_type=self.stock_1.get_material_type(),
+                                               target_customer_order_id=customer_id)
                 continue
-            elif self.stock_2.get_inventory() - rm2 < self.stock_2.get_safety_stock() and not (out_of_rm2 or rm2_ordered):
-                if self.stock_2.get_inventory() < rm2:
-                    out_of_rm2 = True
-                    order_quantity = rm2
-                else:
-                    order_quantity = self.stock_2.get_safety_stock() - (self.stock_2.get_inventory() - rm2)
-                self.initialize_business_order(quantity=order_quantity,
+            elif result_stock_check_2 > 0 and not rm2_ordered:
+                rm2_ordered = True
+                self.initialize_business_order(quantity=result_stock_check_2,
                                                material_type=self.stock_2.get_material_type(),
                                                target_customer_order_id=customer_id)
-                rm2_ordered = True
                 continue
-            elif self.stock_3.get_inventory() - rm3 < self.stock_3.get_safety_stock() and not (out_of_rm3 or rm3_ordered):
-                if self.stock_3.get_inventory() < rm3:
-                    out_of_rm3 = True
-                    order_quantity = rm3
-                else:
-                    order_quantity = self.stock_3.get_safety_stock() - (self.stock_3.get_inventory() - rm3)
-                self.initialize_business_order(quantity=order_quantity,
+            elif result_stock_check_3 > 0 and not rm3_ordered:
+                rm3_ordered = True
+                self.initialize_business_order(quantity=result_stock_check_3,
                                                material_type=self.stock_3.get_material_type(),
                                                target_customer_order_id=customer_id)
-                rm3_ordered = True
                 continue
-            elif out_of_rm1 or out_of_rm2 or out_of_rm3:
+            elif rm1_ordered or rm2_ordered or rm3_ordered:
                 return False
-            return True
+            else:
+                return True
 
     def initialize_business_order(self, quantity, material_type, target_customer_order_id):
         self.job_list[target_customer_order_id] = {}
@@ -103,7 +93,7 @@ class Manufacturer:
         supplier = raw_material_supplier.RawMaterialSupplier(env=self.env,
                                                              business_order=b_order,
                                                              material_type=material_type)
-        self.env.process(supplier.init_delivery())
+        supplier.init_delivery()
 
     def initialize_delivery(self, c_order: customer_order.CustomerOrder):
         transporter = carrier.Carrier(self.env, c_order)
