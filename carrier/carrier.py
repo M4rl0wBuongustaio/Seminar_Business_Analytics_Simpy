@@ -15,7 +15,6 @@ class Carrier:
                     elif 'ship' in key[0]:
                         self.env.process(self.ship_delivery(key[1]))
                         continue
-        return
 
     def ship_delivery(self, delivery_duration):
         yield self.env.timeout(delivery_duration)

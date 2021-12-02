@@ -1,21 +1,20 @@
 class Stock:
-    def __init__(self, env, material_type, inventory, safety_stock, address, monitoring):
+    def __init__(self, env, material_type, inventory, address, monitoring, target_stock, reorder_point):
         self.env = env
         self.material_type = material_type
         self.inventory = inventory
-        self.safety_stock = safety_stock
         self.address = address
         self.monitoring = monitoring
+        # Monitor initial inventory data.
         self.increase_inventory(0)
+        self.target_stock = target_stock
+        self.reorder_point = reorder_point
 
     def get_material_type(self):
         return self.material_type
 
     def get_inventory(self):
         return self.inventory
-
-    def get_safety_stock(self):
-        return self.safety_stock
 
     def increase_inventory(self, quantity):
         self.inventory = quantity + self.get_inventory()
@@ -28,15 +27,11 @@ class Stock:
     def get_address(self):
         return self.address
 
-    def check_stock(self, required_quantity):
-        if self.get_inventory() > required_quantity:
-            if self.get_safety_stock() > (self.get_inventory() - required_quantity):
-                return self.get_safety_stock() - (self.get_inventory() - required_quantity)
-        elif self.get_safety_stock() > 0 and not self.get_inventory() > required_quantity:
-            return self.get_safety_stock() - (self.get_inventory() - required_quantity)
-        else:
-            return required_quantity - self.get_inventory()
-        return 0
+    def get_target_stock(self):
+        return self.target_stock
+
+    def get_reorder_point(self):
+        return self.reorder_point
 
     def monitor_inventory(self):
         current_inventory = self.get_inventory()

@@ -31,20 +31,25 @@ def customer_generator(env, wholesaler):
 env = simpy.Environment()
 # Manufacturer
 address = 3
-stock_1 = stock.Stock(env=env, material_type=1, inventory=0, safety_stock=10, address=address, monitoring=monitoring)
-stock_2 = stock.Stock(env=env, material_type=2, inventory=0, safety_stock=20, address=address, monitoring=monitoring)
-stock_3 = stock.Stock(env=env, material_type=3, inventory=0, safety_stock=30, address=address, monitoring=monitoring)
+stock_1 = stock.Stock(env=env, material_type=1, inventory=8, reorder_point=2, target_stock=8, address=address,
+                      monitoring=monitoring)
+stock_2 = stock.Stock(env=env, material_type=2, inventory=12, reorder_point=3, target_stock=12, address=address,
+                      monitoring=monitoring)
+stock_3 = stock.Stock(env=env, material_type=3, inventory=5, reorder_point=5, target_stock=20, address=address,
+                      monitoring=monitoring)
 manufacturer = manufacturer.Manufacturer(env=env, address=address, stock_1=stock_1, stock_2=stock_2, stock_3=stock_3,
                                          monitoring=monitoring)
 # Wholesaler
-stock_ws = stock.Stock(env=env, material_type=0, inventory=50, safety_stock=30, address=2, monitoring=monitoring)
+stock_ws = stock.Stock(env=env, material_type=0, inventory=0, reorder_point=5, target_stock=30, address=2,
+                       monitoring=monitoring)
 wholesaler = wholesaler.Wholesaler(env=env, stock=stock_ws, manufacturer=manufacturer, address=2, monitoring=monitoring)
 # start of simulation
 env.process(customer_generator(env=env, wholesaler=wholesaler))
 # go!
+print(monitoring.get_sc_data().to_string())
 env.run(until=run_time)
 
 # monitoring.print_sc_data()
-monitoring.save_sc_data()
+# monitoring.save_sc_data()
 
 print(monitoring.get_sc_data().to_string())

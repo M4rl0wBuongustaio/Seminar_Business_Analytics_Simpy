@@ -24,21 +24,22 @@ class Wholesaler:
 
     def check_stock(self, c_order: order.customer_order.CustomerOrder):
         order_quantity = c_order.get_quantity()
-        if self.stock.get_inventory() - order_quantity < self.stock.get_safety_stock():
-            self.initialize_business_order(
-                quantity=self.stock.get_safety_stock() - (self.stock.get_inventory() - order_quantity))
-            self.add_backorder(c_order)
-        else:
+        if self.stock.get_inventory() >= order_quantity:
+            if self.stock.get_reorder_point() > (self.stock.get_inventory() - order_quantity):
+                self.initialize_business_order(quantity=self.stock.get_target_stock())
             transporter = carrier.Carrier(env=self.env, c_order=c_order)
             transporter.calculate_delivery()
             self.stock.decrease_inventory(quantity=order_quantity)
+        else:
+            self.initialize_business_order(quantity=self.stock.get_target_stock())
+            self.add_backorder(c_order)
 
-    def receive_customer_order(self, c_order):
-        self.check_stock(c_order)
+    def receive_customer_order(self, c_order):        self.check_stock(c_order)
 
     def receive_delivery(self, c_order):
         self.stock.increase_inventory(c_order.get_quantity())
-        self.check_stock(c_order=self.get_last_backorder())
+        if self.backorder.qsize() > 1:
+            self.check_stock(c_order=self.get_last_backorder())
 
     def initialize_business_order(self, quantity):
         c_order = customer_order.CustomerOrder(quantity=quantity, debtor=self)
